@@ -2,6 +2,7 @@ import {Server} from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 
 
@@ -21,12 +22,46 @@ const startServer = async ()=>{
     }
 }
 
+(async()=>{  
+await startServer();
+await seedSuperAdmin();
+})()
+
+
+
+
+
+process.on("SIGTERM", ()=>{
+    console.log("Caught Signal For Shutdown... Server Shutting Down");
+
+    if(server){
+        server.close(()=>{
+            process.exit(1);
+        })
+    }
+    process.exit(1);
+})
+
+process.on("SIGINT", () => {
+    console.log("SIGINT signal recieved... Server shutting down..");
+
+    if (server) {
+        server.close(() => {
+            process.exit(1)
+        });
+    }
+
+    process.exit(1)
+})
+
+
+
 
 process.on("unhandledRejection", ()=>{
     console.log("Unhandled Rejection detected... Server Shutting Down");
 
     if(server){
-        server.close(()=>{
+        server.close(()=>{ 
             process.exit(1);
         })
     }
@@ -47,16 +82,9 @@ process.on("uncaughtException", ()=>{
 
 
 
-process.on("SIGTERM", ()=>{
-    console.log("Caught Signal For Shutdown... Server Shutting Down");
-
-    if(server){
-        server.close(()=>{
-            process.exit(1);
-        })
-    }
-    process.exit(1);
-})
 
 
-startServer();
+
+
+
+
