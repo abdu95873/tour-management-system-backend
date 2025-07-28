@@ -17,7 +17,7 @@ export enum Role {
  */
 
 export interface IAuthProvider {
-    provider: "google"|"credential";
+    provider: "google"|"credentials";
     providerId: string;
 }
 
@@ -50,4 +50,5 @@ export interface IUser {
     auths: IAuthProvider[];
     booking?: Types.ObjectId[];
     guides?: Types.ObjectId[];
+    createdAt?: Date;
 }

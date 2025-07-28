@@ -1,20 +1,21 @@
-import {Server} from "http";
+import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
 import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
+import { connectRedis } from "./app/config/redis.config";
 
 
 
 
 let server: Server;
 
-const startServer = async ()=>{
+const startServer = async () => {
     try {
         await mongoose.connect(envVars.DB_URL)
 
         console.log("Server is Connected to DB!!");
-        server = app.listen(envVars.PORT, ()=>{
+        server = app.listen(envVars.PORT, () => {
             console.log(`Server is listening to port ${envVars.PORT}`);
         })
     } catch (error) {
@@ -22,20 +23,21 @@ const startServer = async ()=>{
     }
 }
 
-(async()=>{  
-await startServer();
-await seedSuperAdmin();
+(async () => {
+    await connectRedis();
+    await startServer();
+    await seedSuperAdmin();
 })()
 
 
 
 
 
-process.on("SIGTERM", ()=>{
+process.on("SIGTERM", () => {
     console.log("Caught Signal For Shutdown... Server Shutting Down");
 
-    if(server){
-        server.close(()=>{
+    if (server) {
+        server.close(() => {
             process.exit(1);
         })
     }
@@ -57,11 +59,11 @@ process.on("SIGINT", () => {
 
 
 
-process.on("unhandledRejection", ()=>{
+process.on("unhandledRejection", () => {
     console.log("Unhandled Rejection detected... Server Shutting Down");
 
-    if(server){
-        server.close(()=>{ 
+    if (server) {
+        server.close(() => {
             process.exit(1);
         })
     }
@@ -69,11 +71,11 @@ process.on("unhandledRejection", ()=>{
 })
 
 
-process.on("uncaughtException", ()=>{
+process.on("uncaughtException", () => {
     console.log("Uncaught Expectation detected... Server Shutting Down");
 
-    if(server){
-        server.close(()=>{
+    if (server) {
+        server.close(() => {
             process.exit(1);
         })
     }
