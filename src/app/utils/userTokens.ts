@@ -8,7 +8,7 @@ import httpStatus from "http-status-codes";
 
 
 
-export const createUserToken = (user: Partial<IUser>) => {
+export const createUserTokens = (user: Partial<IUser>) => {
     const jwtPayload = {
         userId: user._id,
         email: user.email,
